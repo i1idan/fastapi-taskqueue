@@ -1,0 +1,68 @@
+services:
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: fastapi
+    environment:
+      - WORKERS=1
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_STORE_DB_INDEX}
+    ports:
+      - 8000:8000
+    volumes:
+      - ./app:/code/app
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery worker --app=worker.celery_app
+    volumes:
+      - ./app/worker:/code/worker
+      - ./app:/code/app
+    container_name: celery
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_STORE_DB_INDEX}
+    depends_on:
+      - fastapi
+      - redis
+      - rabbitmq
+
+  redis:
+    container_name: redis
+    image: redis:6-alpine
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: flower --app=worker.celery_app --port=5555 --broker=amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+    ports:
+      - 5556:5555
+    volumes:
+      - ./app/worker:/code/worker
+    container_name: flower
+    environment:
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
+      - CELERY_RESULT_BACKEND=redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_STORE_DB_INDEX}
+    depends_on:
+      - fastapi
+      - redis
+      - worker
+      - rabbitmq
+
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+    container_name: rabbitmq
+    ports:
+      - 5672
+      - 15672:15672
+      - 15692:15692

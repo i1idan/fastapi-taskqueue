@@ -1,16 +1,11 @@
-# fastapi-taskqueue
+## How to run without Docker compose
 
-## How to run 
+
+## How to run with Docker compose
 
 ```bash
  docker compose up --build
 ```
-
-## Swagger 
-
-http://localhost:8000/docs
-
-
 ## components
 | Endpoint | Method | Description
 | --- | --- | --- | 
