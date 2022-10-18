@@ -10,4 +10,4 @@ CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', f"amqp://{Config.RABBITM
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}/{Config.REDIS_STORE_DB_INDEX}")
 
 # Initialize Celery
-celery = Celery('APP', broker_url=CELERY_BROKER_URL, result_backend=CELERY_BROKER_URL)
+celery = Celery('APP', broker_url=CELERY_BROKER_URL, result_backend=CELERY_RESULT_BACKEND)
