@@ -1,11 +1,13 @@
 """define celery tasks"""
 
+from celery.schedules import crontab
 from .celery_app import celery
 from .config import Config
 from datetime import datetime
 import boto3
 import logging
 from pathlib import Path    
+import shutil
 
 @celery.task(name="upload_attachment_to_s3")
 def upload_attachment_to_s3(file_path:str):
@@ -29,3 +31,8 @@ def upload_attachment_to_s3(file_path:str):
 
     return {'status': '200', 'message':'file uploaded successfully'}
 
+
+@celery.task(name="clean_shared_volume")
+def clean_shared_volume(dir_path:str):
+    shutil.rmtree(dir_path)
+    
