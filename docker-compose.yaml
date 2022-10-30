@@ -14,6 +14,7 @@ services:
       - 8000:8000
     volumes:
       - ./app:/code/app
+      - shared-volume:/tmp
 
   worker:
     build:
@@ -23,6 +24,7 @@ services:
     volumes:
       - ./app/worker:/code/worker
       - ./app:/code/app
+      - shared-volume:/tmp
     container_name: celery
     environment:
       - CELERY_BROKER_URL=amqp://${RABBITMQ_USERNAME}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}
@@ -66,3 +68,6 @@ services:
       - 5672
       - 15672:15672
       - 15692:15692
+
+volumes:
+  shared-volume:

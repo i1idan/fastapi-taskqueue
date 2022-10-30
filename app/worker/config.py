@@ -36,6 +36,12 @@ class CeleryConfig:
     REDIS_PORT: int = 6379
     REDIS_CELERY_DB_INDEX: int = 0
     REDIS_STORE_DB_INDEX: int = 0
+    # S3
+    S3_ACCESS_KEY_ID: str = 'HFjem90Dh2jUNBMl'
+    S3_SECRET_ACCESS_KEY: str = 'SjA547SKtxEiTf0S5g5JCo1hhLrsMSEE'
+    S3_BUCKET: str =  'c888701'
+    S3_ENDPOINT_URL: str = 'http://c888701.parspack.net'
+
 
     """
     Map environment variables to class fields according to these rules:
