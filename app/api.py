@@ -1,12 +1,10 @@
 
 import logging
 import tempfile
-import io
-from zipfile import ZipFile
 from fastapi import FastAPI, UploadFile, File
 from fastapi.encoders import jsonable_encoder
-from .worker.celery_tasks import upload_attachment_to_s3
-
+from .worker.celery_tasks import upload_attachment_to_s3, clean_shared_volume
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -17,7 +15,7 @@ def get():
 
 
 @app.post("/")
-async def get_body(file: UploadFile = File()):
+async def get_file(file: UploadFile = File()):
 
     if not file.filename.endswith(".zip"):
 
@@ -30,5 +28,11 @@ async def get_body(file: UploadFile = File()):
         file_object.write(file.file.read())
 
     upload_attachment_to_s3.delay(file_location)
+    logging.error(directory_path)
+
+    # example of scheduled task
+    now = datetime.now()
+    later = now + timedelta(minutes=1)
+    clean_shared_volume.apply_async(args=(directory_path,), eta=later)
 
     return {"Status": "200"}

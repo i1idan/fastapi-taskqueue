@@ -41,7 +41,7 @@ class CeleryConfig:
     S3_SECRET_ACCESS_KEY: str = 'SjA547SKtxEiTf0S5g5JCo1hhLrsMSEE'
     S3_BUCKET: str =  'c888701'
     S3_ENDPOINT_URL: str = 'http://c888701.parspack.net'
-
+    SHARED_VOLUME = '/tmp'
 
     """
     Map environment variables to class fields according to these rules:
