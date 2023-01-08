@@ -28,7 +28,6 @@ async def get_file(file: UploadFile = File()):
         file_object.write(file.file.read())
 
     upload_attachment_to_s3.delay(file_location)
-    logging.error(directory_path)
 
     # example of scheduled task
     now = datetime.now()
